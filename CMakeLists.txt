@@ -3,9 +3,6 @@ project(serial)
 
 find_package(ament_cmake REQUIRED)
 
-ament_export_include_directories(include)
-ament_export_libraries(${PROJECT_NAME})
-
 ## Sources
 ## Add serial library
 add_library(${PROJECT_NAME}
@@ -13,6 +10,9 @@ add_library(${PROJECT_NAME}
     include/serial/serial.h
     include/serial/v8stdint.h
 )
+target_include_directories(${PROJECT_NAME} PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
 
 if(APPLE) # macOS
     find_library(IOKIT_LIBRARY IOKit)
@@ -37,10 +37,6 @@ elseif(WIN32) # Windows
     ament_export_libraries(setupapi)
 endif()
 
-
-## Include headers
-target_include_directories(${PROJECT_NAME} PRIVATE include)
-
 ## Uncomment for example
 # add_executable(serial_example examples/serial_example.cc)
 # add_dependencies(serial_example ${PROJECT_NAME})
@@ -48,15 +44,23 @@ target_include_directories(${PROJECT_NAME} PRIVATE include)
 
 
 ## Install executable
-install(TARGETS ${PROJECT_NAME}
-    ARCHIVE DESTINATION lib
-    LIBRARY DESTINATION lib
+install(
+  TARGETS ${PROJECT_NAME}
+  EXPORT export_${PROJECT_NAME}
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
 )
 
 ## Install headers
-install(FILES include/serial/serial.h include/serial/v8stdint.h
-    DESTINATION include/serial
+install(
+  DIRECTORY include/
+  DESTINATION include
 )
+
+ament_export_include_directories(include)
+ament_export_libraries(${PROJECT_NAME})
+ament_export_targets(export_${PROJECT_NAME})
 
 ## Tests
 #if(BUILD_TESTING)
