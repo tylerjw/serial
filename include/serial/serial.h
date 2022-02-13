@@ -343,7 +343,7 @@ public:
    *
    * \param size A maximum length of combined lines, defaults to 65536 (2^16)
    *
-   * \param eol A string to match against for the EOL.
+   * \param eol A string to match sagainst for the EOL.
    *
    * \return A vector<string> containing the lines.
    *
